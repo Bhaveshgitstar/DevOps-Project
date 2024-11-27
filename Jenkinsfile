@@ -15,14 +15,11 @@ pipeline {
     }
 
     stage('Deploy') {
-      when {
-        input {
-          message "Do you want to deploy the application?"
-          ok "Deploy"
-        }
-      }
       steps {
-        echo "Deploying the application"
+        script {
+          input message: "Do you want to deploy the application?", ok: "Deploy"
+          echo "Deploying the application"
+        }
       }
     }
   }
