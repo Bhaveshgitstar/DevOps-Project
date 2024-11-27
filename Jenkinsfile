@@ -17,8 +17,15 @@ pipeline {
     stage('Deploy') {
       steps {
         script {
-          input message: "Do you want to deploy the application?", ok: "Deploy"
-          echo "Deploying the application"
+          // Pauses the pipeline for manual input
+          try {
+            input message: "Do you want to deploy the application?", ok: "Deploy"
+            echo "Deploying the application"
+          } catch (Exception e) {
+            echo "Deployment was skipped or failed due to input error."
+            currentBuild.result = 'ABORTED'  // Mark the build as aborted if input fails
+            throw e  // Rethrow to terminate the pipeline gracefully
+          }
         }
       }
     }
@@ -37,6 +44,9 @@ pipeline {
     }
     failure {
       echo 'The pipeline failed during execution'
+    }
+    aborted {
+      echo 'The deployment process was aborted.'
     }
   }
 }
